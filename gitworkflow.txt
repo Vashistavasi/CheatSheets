@@ -1,0 +1,276 @@
+
+1) First will initialse a local repo with the following command. 
+
+	 git init -b main // This creates a local master branch named main. It can be anything by default I think git choose master. 
+
+2) We have created a local repo and created a remote repo. I have added the remote address into my local repo using the following command : 
+
+	git remote add origin git@bitbucket.org:aplaypeak/gitworkflow.git 
+
+3) We will push our local main branch to the remote repo we have created just now in bitbucket. 
+
+ 	git push -u origin main
+
+4) We will be creating multiple branches let's like feature/Newfeature, hotfix/newHotfix. We will be switching between them.
+
+        git checkout -b feature/newFeature
+
+5) Successfly created a feature/newFeature branch. Let's commit this and create another branch Let's say hotfix/ newHotfix.
+
+	git checkout -b hotfix/newHotfix
+
+6) Successfully created hotfix/newHotfix branch. The thing is our hotfix branch is ahead by one commit over newFeature once we commit this and our main in behind by two commit fro our hotfix branch.
+
+7) Now What we will do is merge hotfix branch into feature branch. So feature and hotfix will have same data and merge feature with main branch so main and feature and hotfix will all be sharing the same history.
+
+        git merge hotfix/newHotfix // you should first switch to the branch to which you want the changes to be merged. 
+
+8) Some messy changes that I don't want when I switch my branches. Like let's say I want to work on some hotfix. Let's what happens if I checkout directly.
+
+9) I will stash my changes on the working tree. It sounds exactly like stashing something under the rug, which you want to deal with later, but right you want to work on a different branch and want the changes you made so far. 
+
+         git stash push -m " Will work on this later stashing my changes " 
+
+10 ) Git reset whenever the code is our local and we haven't pushed any thing remote we can use git reset. 
+
+There are three types of git reset 
+
+-> hard - the head, the working tree, staged area will be updated.
+-> mixed - the head, the staged area are updated. 
+-> soft - the head is updated. 
+
+11) This line will not be removed from the working tree but the updated file we add to the staging area will be removed.
+
+	git reset --hard or git reset --mixed or git reset --soft
+
+        git reset --hard head~1
+
+12) git revert - we would revert only if we pushed our changes to remote repo, git merge conflicts and also git rebase . 
+
+13) git commit --amend 
+
+14) git switch development #### is same as ####
+    git checkout -b development origin/development
+
+15)git show head~2
+ git show head~2^2 -> for merge
+
+git show head@{"1 month ago"}
+
+16) git blame file.txt
+
+17) git diff head head~2
+   
+    git diff head development
+
+18) git log --patch
+
+19) git log --grep apples --oneline
+
+20) git log -Gapples --patch
+
+21) git log ~3 --oneline  or git log head~5..head^ --oneline
+
+22) git log feature..development --oneline
+
+23) Deleting a local branch git branch -D branchname
+24) Deleting a branch in remote git push -d origin branchname
+
+
+25) Reverting back only a specific file git checkout commit -- filepath
+
+26) git branch --no-merged/--merged -r - returns remote/local branches which are not merged/merged
+
+27) git remote prune origin --dry-run : dry run for prune remote tracking references
+
+28) git fetch -p : pruning while fetching
+
+29) git tag tagName Sha : lightweight tag
+    git tag -am "my tag message" tagname sha
+
+30) git tag -d tagName
+
+31) git tag --list/-l  or with regex git tal -l "v2*"
+
+32) git tag -n5
+
+33) git show v1.1
+
+34) git diff v1.0..v1.1
+
+35) Tags are not branches we can create a branch with following:
+
+	git switch -c branch_V1 v1.0
+
+36) Pushing tags to remote 
+	
+	git push origin v1.0
+
+## Pushing all tags
+
+git push origin --tags
+
+## fetching only tags
+
+git fetch --tags
+
+37) Deleting a tag in git
+
+git push -d origin v1.0
+
+38) git add -i // interactive Staging
+
+In patch mode we can choose hunks with gives us control over what changes can go and cannot 
+
+git add -p 
+
+git stash -p 
+
+git reset -p 
+
+git restore -p
+
+git commit -p
+
+39) git status --cached / git diff --cached
+
+40) git cherry-pick hash // git cherry-pick hash..hash2
+
+41) git diff from-commit to-commit > output.diff //creating diff patches
+
+42) Applying diff patches: 
+
+	git apply output.diff
+
+43) A formatted patch 
+
+git format-patch hash1..hash2
+
+formating a single patch 
+
+git format-patch -1 hash
+
+format patches to a file/directory git format-patch hash1..hash -o ~/feature_patches.
+
+#output patches as a single file
+git format-patch hash1..hash2 --stdout > feature.patch
+
+44) Applying formated patches
+
+# Apply single patch ( am - apply mailbox ) 
+git am feature/0001-some-name.patch
+
+# Apply all patches in a directory
+git am feature/*.patch
+
+45) Rebasing -> replays commits on a different or current branch
+
+#Rebase current branch to tip of main
+git rebase main
+
+#Rebase new_feature to tip of main
+git rebase main new_feature
+
+git rebase --onto newbase upstream branch
+
+#Returns commit where topic branch diverges ( base commit from where rebase happens) 
+git merge-base main new_feature
+
+ 
+46) Pull rebase 
+
+git pull rebase -r 
+
+use --rebase=preserve if you want our rebasing to have merge commits.
+
+47) # List commits that changes file
+	git log filename.txt
+
+    # List commits as patches (diff)
+	git log -p
+
+ # List changes to lines 100-150 in filename.txt
+	git log -L 100,150:filename.txt
+	git log -l 100,+50:filename.txt
+
+48) Annotate a file with commit details
+
+	git blame filename.txt
+
+	#ignore whitespace
+	git blame -w filename.txt
+	
+	#Annotate lines 100-150 
+	git blame -L 100,150 filename.txt
+	git blame -L 100,+50 filename.txt
+
+	#Annotate file at revision hash
+	git blame hash filename.txt
+	git blame hash --filename.txt
+
+49) #Add a global alias for "praise"
+	git config --global alias.praise blame
+
+#Similar to blame, different output format
+git annotate filename.txt
+
+	
+
+50) Git Bisect
+
+git bisect start 
+git bisect good <hash>
+git bisect good <bad Hash>
+git bisect reset
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

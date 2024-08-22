@@ -1,0 +1,409 @@
+1) cd - : to toggle between directories
+2) ctrl + r : reverse search
+3) !! : last command
+4) ctrl + a : go to line start
+5) ctrl + e : go to line end. 
+6) Escape . : previous arguments.
+7)mkdir -p dir1/{dir2,dir3}/dir4 : creates dir1 if it doesn't exist.
+8)!l : last command starting with l
+9) > : redirection
+10) 2> : redirection of error output.
+11) &> : both error and standart output will be redirected. 
+12) ls -l | wc -l : returns the line count.
+13) echo "hello" | sudo tee -a /etc/host : appending to a restricted file
+14) cp source destination
+   cp --backup=numbered source destination
+15) rm hosts*
+16) mv source destination : renaming files
+same command used to mv files.
+17) rm -rf : recursive delete files. 
+18) alias : display alias
+19) unalias: remove alias 
+20 \ : unapply alias at runtime.
+type ls : return the alias on the command
+21) diff : differences between files
+22) sed : streameditor
+FAT/NTFS for windows.
+Type of file/user/group/user linkcount user group file size data filenaame
+23) stat filename, stat -c %a filename.
+24) Everything is a file in linux
+a) regular file
+b) directory
+c) link
+d) pipe
+e) block/Character
+f) socket
+25)ls -lh : humanreadable
+hard link count is followed by permission blocks. 
+26) ln source destination
+27) ln -s source destination : creates softlink
+28) pwd -P : currently physical directory
+29) default permissions for file is 666 
+ default permission for directories is 777
+ but we can effect the permissions through umask
+on ubunute default is 002   
+30)umask 000
+31) Permissions are not cumulative. 
+Either user/group/others
+32) chmod
+33) chmod -v 666 filename
+34) chmod -vR a+X directory
+chmod -v +x filename - umask has effect
+chmod a+x irrespective of umask 
+chmod a+X already having X.
+chmod -v g=rw filename
+chmod -v 666 filename
+chmod -v o= filename
+chmod -v g-w file : remove write 
+chmod -v g+w file : add write 
+35) chown root file 
+36) sudo chgrp sudo file 
+37) sudo mkdir -m 751 /shared
+ls -ld /shared
+38) ls -lrth
+39)ls -lrSh
+40) find /etc -mmin 60 2>/dev/null
+find /etc -mmin -60 2>/dev/null
+find /etc -mmin +60 2>/dev/null
+find / -maxdepth 1 -type l
+find /usr/share/doc -type f -name '*.html' -exec cp{} ~/links/ \;
+find /usr/share/doc -type f -name '*.html' -delete;
+41) locate -S
+42) locate "hosts", locate -i "hosts" locate -e -i "hosts"
+43)  apt search python3 " | wc -l 
+apt search '^pytho3$' --names-only | wc -l 
+44) grep '^[^#].*yes$' -i filename 
+45) grep - global regular expression print 
+----- Archiving in Linux ------
+ --tar
+ --gzip/gunzip
+ --xz/unxz
+ --cpio
+
+ tar : The command tar can be used to create file archives. Although 
+ Tape Archives, they are more commonly used in standard filesystems
+ By default, a TAR file is not comppressed but may appear
+ to be a slightly small size than the original content. 
+ This is due to more efficient use of blocks in the filesystem
+ and not compression.
+
+ 1) du -sh /etc : disk usage.
+
+ operations : 
+ -c create -f file: tar -cf file.tar file1 file2
+ -t Table of Contents : tar -tf file.tar
+ -x Extract : tar -xf file.tar 
+
+ Various Compression utilities exist in Linux
+ -gzip/gunzip
+ -bzip2/bunzip2
+ -xz -z/ xz -d (unxz)
+
+ These can be used indpendently or with tar
+
+ Creating a zipped archive
+  
+- tar -czf (gzip)
+- tar -cjf (bzip2)
+- tar -cJf (xz)
+
+tar -cJf etc.tar.xz /etc 2>/dev/null&
+
+ps
+
+note : 2>/dev/null&
+redirects the output to /dev/null where dev/null 
+is a special linux file which discards the data
+written into it and the & makes the process run in 
+background and we can continue to use the terminal.
+
+gzip etc.tar 
+gunzip etc.tar.gz
+
+bzip2 etc.tar
+bunzip2 etc.tar.bz2
+
+xz -z etc.tar
+unxz etc.tar.xz
+
+time tar -cf etc.tar /etc 
+time tar -czf etc.tar.gz /etc
+time tar -cjf etc.tar.b2 /etc
+time tar -cJf etc.tar.xz /etc 
+
+Using cpio
+
+The command cpio, (Copy IO), can be used to create archives. Taking
+the output from a command to send to an archive to be restored
+later.
+
+Backing up Output.
+
+The command cpio means that we can copy our standard IO 
+as a backup or a restore/ we can search for files with find.
+
+find /usr/share/doc -type f -name '*.html | cpio -ov >backup.cpio
+-o reading the output.
+
+
+mkdir restore && cd restore 
+
+cpio -idv --no-absolute-filenames < ~/backup.cpio
+
+---Privileges---
+
+su - Substitute User
+
+1) UID 0 usually root manages your linux system.
+
+Using the command su we can change to the root account, or any accountthat we have the P
+password for. If the root account does not have a password, then this is 
+not an option. We can just change to the account or we can execute a full
+login.
+
+su - , su -l : all the environment variables will be of the root account
+
+su - bob : switch to bob account. You need password. 
+
+sudo
+
+Using sudo, we can delegate administrative task without the need to divulge the
+root password or give access to all commands
+
+sudo visudo -f /etc/sudoers.d/bob
+
+Using the command visudo to make changes to the configuraiton will enforce
+a syntax check when the file is saved. A misconfigured sudo entry 
+will diasble sudo access to your system.
+
+sudo -l 
+
+sudo useradd -m bob -s /bin/bash
+
+sudo passwd bob 
+
+sudo visudo 
+
+sudo visudo -f /etc/sudoers.d/bob
+ enter " bob ALL=(root) /bin/passwd, !/usr/bin/passwd root"
+
+ sudo -k : to clear sudo cache 
+
+
+============================================ Bash Scripting ==========================================
+
+#!/bin/bash - Shell Script start shebang line 
+umask 022 - set the umask  at the start of the script
+
+$(date +"%d-%b-%y %H.%M.%S.%N %p") - for date in shell 
+
+start= `date +%s.%N` - similar to currenttimemillis in java
+
+split -a 5 -d --additional-suffix=.txt -l lines source_file destination_file_Pattern_ - the -d flag sets the pattern numbered. 
+
+echo "$end - $start" | bc -l - calculates the difference between end and start times. 
+
+for f in file* ; 
+
+do 
+
+mv -i -- source destination; - the -- is to specify that the next parameters are files and not options. 
+
+done;
+
+for sort a file and getting unique records use sort file.txt | uniq -u
+
+
+
+
+
+
+
+
+
+
+
+
+
+ps -ef
+top 
+once in top type
+F - to select the filed to use to sor the output by default 
+the output is sorted with respect to cpu time.
+
+----Stopping process-----
+
+In linux process communicate with each other using signals. A process
+ signal is a predefined message that processes recognize and may choose to ignore or at on. 
+
+ Linux Process Signals:
+
+ HUP - Hang up
+ INT - Interrupt
+ QUIT - stop running
+ KILL - Unconditionally terminate.
+ SEGV - Segement violation
+ TERM - Terminate if possible.
+ STOP - Stop unconditionally but don't terminate
+ TSTP - Stop or pause but continue to run in background
+ CONT - Resume execution after STOP or TSTP.
+
+ kill <PID>
+ kill -s HUP <PID>
+ we can add more signals with -s flag
+
+ pkill 
+
+ allows us to kill process with process name instead of pid.
+
+ ----- Disk Space ---
+ df -t ext4 -t vfat
+ disk free of type ext4 and vfat 
+df -h
+disk free in human readable format.
+
+To check of usage of each file use du command.
+
+------ Sorting data in files ----
+sort -n file2
+
+if you want to sort the log file based on month timestamp we can use
+sort -M file3
+
+------- Searching Data --------
+
+grep -n t file1
+output matching lines where t is found.
+grep -c t file1
+return count
+grep -e t -e f file1
+more than one matching pattern
+
+egrep for regex , fgrep for fixed string pattern.
+which bash - to check the bash currently using.
+which tcsh
+which zsh
+which csh
+which dash
+
+cat etc/shells -- all shells installed in linux
+
+which sh - to find the default shell
+
+ls -l /usr/bin/sh
+
+echo $0 - displays the name of current shellxf 
+
+pwd; ls test*; cd /etc ; pwd; 
+(pwd; ls test*; cd /etc ; pwd;)
+
+adding parentheses and turning the command list into a process list, 
+it creates a subshell to texecute the commands.
+
+curl -ks -w "\nResponse: %{response_code}\n Time:%{time_total}\n" "url"
+
+who - to list the users logged in linux
+
+:hi Normal ctermfg=green
+:set number 
+
+
+
+du -ch /myfolder/*.txt
+
+
+
+Linux Scripts
+
+1) $variable_name to reference a variable.
+
+2) ${variable_name}suffix for evaluating the entire value in a strings
+
+3) read variable_name : for reading input from the command prompt
+
+4) $? : previous command return value 0 indicates success 1 indicates a failure.
+
+5) test : sets the status to 0 or 1
+test 10 -lt 5 && echo $? will return 1
+test is synounmous to [ 10 -lt 5 ] 
+
+6) if [ `whoami` = "root" ]
+then 
+echo "You are the superuser"
+elif [ `whoami`= "vashi"}
+then echo ""
+else 
+echo ""
+fi
+
+7) case $letter in 
+	Z)
+	 echo "$letter"
+	;;
+	[aeiou])
+	 echo "$letter"
+	;;
+	*)
+	echo "I cannot
+	;;
+	
+8) while [ $i -lt 3 ]
+	do
+	echo "$i"
+	done
+
+9) for variable in *.doc
+	do 	
+		echo "$file is "
+	done
+
+10) $# - for number of command args 
+
+	for arg in $@
+		do 	
+			echo "I $arg"
+		done
+
+
+11) expr '(' 7 + 3 ')' '*' 114;
+
+12) echo -e "what/a" makes a sound
+
+	printf, yes, seq
+
+seq 3 prints 1,2,3
+seq 5 2 prints 5 4 3 2
+seq 1 .3 2 prints 1 1.3 1.6 1.9
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

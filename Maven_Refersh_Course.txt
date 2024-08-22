@@ -1,0 +1,76 @@
+<Properties>
+
+<deep.version>1.1.1</deep.version>
+
+</properties>
+
+Removes duplicate versions, we can easily update the jar version.
+${deep.version} interpolation.
+
+-> Compile Scope is default.
+
+<build>
+<plugin>
+<plugins>
+</plugins>
+<plugin>
+</build>
+
+Mvn clean package 
+
+<reporting>
+Surefire plugin for reports
+
+Mvn clean package site
+
+<reporting>
+<plugins>
+<plugin>
+<groupId>org.apache.maven.plugins</groupId>
+<artifactId>maven-surefire-plugin</artifactId>
+</plugin>
+</plugins>
+</reporting>
+
+Parent POMs 
+	1) Provided versioned dependencies and plugins
+	2) Properties and repositories
+	3) Top-Level visibility for approved artifacts
+
+Reactors
+	1) Built on concept of parent pom
+	2) Often group of related artifacts
+	3) Commands executed on parent
+	4) Reactor executes commands on modules
+
+
+Under
+
+Archetypes:
+
+	1) Project template for maven
+	2) Specified when staring a project
+	3) Consistency for teams
+	4) Project of their own
+	5) Consistent standards
+	6) Consistent structures
+	7) Speed to market
+	8) Consistent resources
+
+LifeCycles
+
+	1) Default  2) Clean 3) Site
+
+Default - validate,compile,test,package,verify,install
+And deploy
+
+  mvn test -Dtest=<> 
+
+• Execute multiple test classes by name: -Dtest=”TestClassName1, TestClassName2, TestClassName3…”
+• Execute multiple test classes by name pattern: -Dtest=”*ServiceUnitTest” or -Dtest=”The*UnitTest, Controller*Test”
+• Specify multiple test methods by name: -Dtest=”ClassName#method1+method2″
+• Specify multiple method names by name pattern: -Dtest=”ClassName#whenSomethingHappens_*”
+
+JSON PATH Documentation For testing and reading json outputs.
+For Dependency Tree:
+mvn -pl 10-spring-intro dependency:tree -s "C:\Users\vb6384\Downloads\settings (2).xml"
