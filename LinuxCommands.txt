@@ -376,9 +376,11 @@ seq 5 2 prints 5 4 3 2
 seq 1 .3 2 prints 1 1.3 1.6 1.9
 
 
+Printing null lines in a file : 
+perl -ne '/\000/ and print;' input.txt
 
 
-
+find . -maxdepth 1 -type f ! -name 'nginx-local.conf' -exec rm -- {} +
 
 
 

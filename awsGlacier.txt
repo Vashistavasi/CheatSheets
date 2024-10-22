@@ -1,0 +1,165 @@
+Creating a vault
+
+1 -> list vaults in current location
+aws glacier list-vaults
+
+2 -> create a vault
+aws glacier create-vault --account-id - --vault-name MemoryVault
+
+Uploading to an archive
+
+1 -> Encrypt the file 
+
+7z a -t7z -mhe=on -pMySecretPassword archive.7z /folder/to/compress
+
+decrypt the file with 
+
+7z x archive.7z -pMySecretPassword
+
+
+2 -> upload command 
+
+aws glacier upload-archive --vault-name MemoryVault --account-id - --body archive.zip
+
+
+
+
+-> Downloading file from AWS Glacier
+
+1 -> Intiating invetory retrival, list all the archives in the vault
+aws glacier initiate-job --vault-name MemoryVault --account-id - --job-parameters="{\"Type\":\"inventory-retrieval\"}"
+{
+    "location": "/211125529343/vaults/MemoryVault/jobs/A3hk-lRqo3LBMWrXEeCa8nIjMaJeT1Y2N6cwiZGQTX3JWU9XaLEei44WBmnDVh9-taNwFU32HRMwdRkgSyhMn--ELtAP",
+    "jobId": "A3hk-lRqo3LBMWrXEeCa8nIjMaJeT1Y2N6cwiZGQTX3JWU9XaLEei44WBmnDVh9-taNwFU32HRMwdRkgSyhMn--ELtAP"
+}
+
+2 -> describe the job to check the status
+ aws glacier describe-job --vault-name MemoryVault --account-id - --job-id "A3hk-lRqo3LBMWrXEeCa8nIjMaJeT1Y2N6cwiZGQTX3JWU9XaLEei44WBmnDVh9-taNwFU32HRMwdRkgSyhMn--ELtAP"
+ 
+ {
+    "JobId": "A3hk-lRqo3LBMWrXEeCa8nIjMaJeT1Y2N6cwiZGQTX3JWU9XaLEei44WBmnDVh9-taNwFU32HRMwdRkgSyhMn--ELtAP",
+    "Action": "InventoryRetrieval",
+    "VaultARN": "arn:aws:glacier:us-east-1:211125529343:vaults/MemoryVault",
+    "CreationDate": "2024-10-06T07:09:23.059Z",
+    "Completed": false,
+    "StatusCode": "InProgress",
+    "InventoryRetrievalParameters": {
+        "Format": "JSON"
+    }
+}
+
+3 -> Download the inventory file
+
+aws glacier get-job-output --vault-name MemoryVault --account-id - --job-id "A3hk-lRqo3LBMWrXEeCa8nIjMaJeT1Y2N6cwiZGQTX3JWU9XaLEei44WBmnDVh9-taNwFU32HRMwdRkgSyhMn--ELtAP" output.json
+
+aws glacier initiate-job --vault-name awsexamplevault --account-id 111122223333 --job-parameters="{\"Type\":\"archive-retrieval\",\"ArchiveId\":\"*** archiveId ***\"}"
+
+4 -> initiate Downloading the archive
+
+aws glacier initiate-job --vault-name Memories --account-id - --job-parameters="{"Type":"archive-retrieval","ArchiveId":"fVBIifWA1_0Imk1wCOiSLH2mmTlM0NbKqLRTU9ikUKdp0QdpAGnDquymwF6V7oBznhDWbPXDrghFmrz5WZQrxJHQPTmy3QT0Xl5fP82n0KNjOQqkpP8KB7LXe2sZc
+XNVqoEBjx_t9Q","Tier":"Expedited","Description":"Expedited retrieval"}"
+
+aws glacier initiate-job --vault-name Memories --account-id - --job-parameters="{\"Type\":\"archive-retrieval\",\"ArchiveId\":\"aO9OrTTyEB4e6I_6ITvJKxyejfNwsyO2VTVgR7O2Cw8pg5chNwefD9dgq7a0S_AEW2NIaL58YCGnHSx4QIFsdmNrzxcn1z-xVCZRhvUwDI0NJlqCpYXFLPl6nlQO-4HPx7EdQPsTMA\",\"Tier\":\"Expedited\",\"Description\":\"Expedited retrieval\"}"
+
+{
+    "location": "/211125529343/vaults/Memories/jobs/T94uBj_RnThX51WNsCqXuCZxyBTcP1zXBtWgWvOWNZgGhQUtDMRzLW7BauEYErptvgztO5lg6K0aAs-G_VoBhu8lGRfH",
+    "jobId": "T94uBj_RnThX51WNsCqXuCZxyBTcP1zXBtWgWvOWNZgGhQUtDMRzLW7BauEYErptvgztO5lg6K0aAs-G_VoBhu8lGRfH"
+}
+
+5 -> describe the job 
+
+aws glacier describe-job --vault-name MemoryVault --account-id - --job-id *** jobid ***
+
+6 -> Download the archive
+
+  aws glacier get-job-output --vault-name MemoryVault --account-id - --job-id *** jobid *** output_file_name
+"FzI87HoLfDELOj-6o7ZxLzjinztUxfiCLTVbtx33eqzbnaCC2vuJQB_9FPtFRzR3bsQpKFzgiHApGqIuUiMV2MhG5nd1"
+
+  ------- Deleting the archive -------
+
+1 -> initiate inventory retrieval
+
+aws glacier initiate-job --vault-name MemoryVault --account-id - --job-parameters="{\"Type\":\"inventory-retrieval\"}"
+
+2 -> describe the job to check the status
+
+aws glacier describe-job --vault-name MemoryVault --account-id - --job-id *** jobid ***
+
+3 -> get Job output
+ 
+aws glacier get-job-output --vault-name MemoryVault --account-id - --job-id *** jobid *** output.json
+
+4 -> Delete the archive
+
+aws glacier delete-archive --vault-name awsexamplevault --account-id - --archive-id *** archiveid ***
+
+ ---- Multiparts upload ----
+1 -> split the file 
+
+    split -b 4G mybigfile.zip mybigfile.zip.part
+    2 -> initiate multipart upload
+
+    aws glacier initiate-multipart-upload --vault-name Memories --account-id - --archive-description "River Rafting" --part-size 4294967296
+{
+    "location": "/211125529343/vaults/Memories/multipart-uploads/dcsD8nqyzFGI5eqmcAA72vREav3JXMoGHa-Wy5vbRcshE4PUvA989BWZNx2vBldxEa3Qn1KaTslGcH3udIqPrLsNXrOn",
+    "uploadId": "dcsD8nqyzFGI5eqmcAA72vREav3JXMoGHa-Wy5vbRcshE4PUvA989BWZNx2vBldxEa3Qn1KaTslGcH3udIqPrLsNXrOn"
+}
+
+3 -> upload the parts
+
+aws glacier upload-multipart-part --body riveraa --range='bytes 0-4294967295/*' --vault-name Memories --account-id - --upload-id "dcsD8nqyzFGI5eqmcAA72vREav3JXMoGHa-Wy5vbRcshE4PUvA989BWZNx2vBldxEa3Qn1KaTslGcH3udIqPrLsNXrOn"
+
+{
+    "checksum": "a581712f6259ad0149c4249be7ec26be1066d48b3b9fe113f6c786f7cb7cc576"
+}
+
+aws glacier upload-multipart-part --body riverab --range='bytes 4294967296-8589934591/*' --vault-name Memories --account-id - --upload-id "dcsD8nqyzFGI5eqmcAA72vREav3JXMoGHa-Wy5vbRcshE4PUvA989BWZNx2vBldxEa3Qn1KaTslGcH3udIqPrLsNXrOn"
+
+{
+    "checksum": "e9b304483be17b043af26f05aa796f99b171b03f8008d217e2e4b5512d39f6e9"
+}
+
+aws glacier upload-multipart-part --body riverac --range='bytes 8589934592-12884901887/*' --vault-name Memories --account-id - --upload-id "dcsD8nqyzFGI5eqmcAA72vREav3JXMoGHa-Wy5vbRcshE4PUvA989BWZNx2vBldxEa3Qn1KaTslGcH3udIqPrLsNXrOn"
+
+{
+    "checksum": "cd8d0aa20aa70e4487939cf181f2017653285e6afff4bdae5e6cee0cb8ad840c"
+}
+
+aws glacier upload-multipart-part --body riverad --range='bytes 12884901888-17179869183/*' --vault-name Memories --account-id - --upload-id "dcsD8nqyzFGI5eqmcAA72vREav3JXMoGHa-Wy5vbRcshE4PUvA989BWZNx2vBldxEa3Qn1KaTslGcH3udIqPrLsNXrOn"
+
+{
+    "checksum": "7e700bc7751e0f103effa06646f0d1972881db1e59c4b4010d22c4e1efadf1f4"
+}
+
+aws glacier upload-multipart-part --body riverae --range='bytes 17179869184-17246618306/*' --vault-name Memories --account-id - --upload-id "dcsD8nqyzFGI5eqmcAA72vREav3JXMoGHa-Wy5vbRcshE4PUvA989BWZNx2vBldxEa3Qn1KaTslGcH3udIqPrLsNXrOn"
+
+{
+    "checksum": "45afdfd332a19bed828d85d127f3ffa08225ad5416ef4c45f3c7ed27aacebb7c"
+}
+
+
+4 -> complete the multipart upload
+
+aws glacier complete-multipart-upload --archive-size 17246618306 --vault-name Memories --account-id - --upload-id "dcsD8nqyzFGI5eqmcAA72vREav3JXMoGHa-Wy5vbRcshE4PUvA989BWZNx2vBldxEa3Qn1KaTslGcH3udIqPrLsNXrOn" --checksum "635427ebf66676e4b0d179184095fd8445395a54ce9d6b4f3a1e0dcf792ca041"
+
+{
+    "location": "/211125529343/vaults/Memories/archives/aO9OrTTyEB4e6I_6ITvJKxyejfNwsyO2VTVgR7O2Cw8pg5chNwefD9dgq7a0S_AEW2NIaL58YCGnHSx4QIFsdmNrzxcn1z-xVCZRhvUwDI0NJlqCpYXFLPl6nlQO-4HPx7EdQPsTMA",
+    "checksum": "635427ebf66676e4b0d179184095fd8445395a54ce9d6b4f3a1e0dcf792ca041",
+    "archiveId": "aO9OrTTyEB4e6I_6ITvJKxyejfNwsyO2VTVgR7O2Cw8pg5chNwefD9dgq7a0S_AEW2NIaL58YCGnHSx4QIFsdmNrzxcn1z-xVCZRhvUwDI0NJlqCpYXFLPl6nlQO-4HPx7EdQPsTMA"
+}
+
+b05f3204fe2d085a3f03bf075c21fbfe92326ff4ec8195de83afd65585274e6c
+
+aws glacier complete-multipart-upload --archive-size 19442378531 --vault-name Memories --account-id - --upload-id "Y36ookqrOwInxL1hjC3kCzFTkn7uNnXBAiWI4EM3EFo0bTKWNm4NvjmvoEJPnASOMkJjail7pnIUxfLWLTNkOEoRgLN0" --checksum "b05f3204fe2d085a3f03bf075c21fbfe92326ff4ec8195de83afd65585274e6c"
+
+
+
+
+17GB -> Expedited
+
+{
+    "location": "/211125529343/vaults/Memories/jobs/FzI87HoLfDELOj-6o7ZxLzjinztUxfiCLTVbtx33eqzbnaCC2vuJQB_9FPtFRzR3bsQpKFzgiHApGqIuUiMV2MhG5nd1",
+    "jobId": "FzI87HoLfDELOj-6o7ZxLzjinztUxfiCLTVbtx33eqzbnaCC2vuJQB_9FPtFRzR3bsQpKFzgiHApGqIuUiMV2MhG5nd1"
+}
+
+aws glacier describe-job --vault-name MemoryVault --account-id - --job-id "FzI87HoLfDELOj-6o7ZxLzjinztUxfiCLTVbtx33eqzbnaCC2vuJQB_9FPtFRzR3bsQpKFzgiHApGqIuUiMV2MhG5nd1"

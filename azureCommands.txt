@@ -1,0 +1,47 @@
+az storage blob download --account-name mulesofteastus2nprdst --container-name output --name "L3 Sub Account/l3_masterfile_20240809.txt" --file download.txt
+
+// List all roles of users on a subscription
+az role assignment list --query "[].{PrincipalName:principalName, Role:roleDefinitionName, Scope:scope}" --output table
+
+// Check the functions of a role
+az role assignment list --query "[].{PrincipalName:principalName, Role:roleDefinitionName, Scope:scope}" --output table
+
+// List Azure subscriptions
+az account list 
+
+// Switch subscriptions 
+az account set --subscription "<subscription-id>"
+
+// List storage blobs
+az storage blob list --account-name mulesofteastus2nprdst --container-name saart --query "sort_by([].{name:name, creationTime:properties.creationTime}, &creationTime)" --output table
+
+// Creating a service principal
+az ad sp create-for-rbac --name "AzureDevOpsServicePrincipal" --role contributor --scopes /subscriptions/<subscription-id>
+
+// Adding admin role
+az role assignment create --assignee <appId> --role "User Access Administrator" --scope /subscriptions/<subscription-id>
+
+// List VMSS instances
+az vmss list-instances --resource-group myResourceGroup --name myVMSS --output table
+
+// List public IPs of VMSS instances
+az vmss list-instance-public-ips --resource-group myResourceGroup --name myVMSS --instance-id 0 --output table
+
+// Deleting a resource group
+az group delete --name <resource-group-name> --yes --no-wait
+
+// Setting up Azure DevOps
+// Initiate the extension
+az extension add --name azure-devops
+
+// Login to Azure DevOps
+az devops configure --defaults organization=https://dev.azure.com/your-organization
+
+// List Service Connections
+az devops service-endpoint list --project your-project-name --output table
+
+// Delete Service Connection
+az devops service-endpoint delete --id <service-connection-id> --project your-project-name --yes
+
+// Example of deleting a service connection in a specific project
+az devops service-endpoint delete --id <service-connection-id> --project VMCreation

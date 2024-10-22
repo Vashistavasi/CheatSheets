@@ -1,0 +1,41 @@
+# Split the file
+1) split -b 4294967296 shimlaaaa shimlaaaa.part
+
+# Initiate multipart upload
+2) aws glacier initiate-multipart-upload --vault-name YourVaultName --account-id - --archive-description "Shimla Archive" --part-size 4294967296
+
+# Upload parts
+3) aws glacier upload-multipart-part --vault-name YourVaultName --account-id - --upload-id YourUploadId --body shimlaaaa.partaa --range 'bytes 0-4294967295/*'
+aws glacier upload-multipart-part --vault-name YourVaultName --account-id - --upload-id YourUploadId --body shimlaaaa.partab --range 'bytes 4294967296-8589934591/*'
+aws glacier upload-multipart-part --vault-name YourVaultName --account-id - --upload-id YourUploadId --body shimlaaaa.partac --range 'bytes 8589934592-12884901887/*'
+aws glacier upload-multipart-part --vault-name YourVaultName --account-id - --upload-id YourUploadId --body shimlaaaa.partad --range 'bytes 12884901888-17179869183/*'
+aws glacier upload-multipart-part --vault-name YourVaultName --account-id - --upload-id YourUploadId --body shimlaaaa.partae --range 'bytes 17179869184-19442378530/*'
+
+# Complete multipart upload
+4) aws glacier complete-multipart-upload --vault-name YourVaultName --account-id - --upload-id YourUploadId --archive-size 19442378531 --checksum YourChecksum
+
+{
+    "location": "/vaults/Memories/multipart-uploads/Y36ookqrOwInxL1hjC3kCzFTkn7uNnXBAiWI4EM3EFo0bTKWNm4NvjmvoEJPnASOMkJjail7pnIUxfLWLTNkOEoRgLN0",
+    "uploadId": "Y36ookqrOwInxL1hjC3kCzFTkn7uNnXBAiWI4EM3EFo0bTKWNm4NvjmvoEJPnASOMkJ"
+}
+
+#Script to calculate the tree hash of a file, you this for step 4. Create a file called checksum.py and add the following code to it.
+
+# Create an ArgumentParser object
+parser = argparse.ArgumentParser(description='Calculate the tree hash of a file.')
+
+# Add arguments to the parser
+parser.add_argument('file_path', type=str, help='The path to the file for which to calculate the tree hash')
+
+# Parse the arguments
+args = parser.parse_args()
+
+# Calculate the checksum
+with open(args.file_path, 'rb') as f:
+    checksum = calculate_tree_hash(f)
+
+# Print the checksum
+print(checksum)
+
+# Run the script with the file path as an argument
+python checksum.py shimlaaaa

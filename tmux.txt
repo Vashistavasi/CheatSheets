@@ -1,0 +1,99 @@
+### Starting tmux
+
+tmux
+tmux new
+tmux new-session
+# Attach or create a new session named 'mysession'
+tmux new-session -A -s mysession
+
+### Killing Sessions
+
+tmux kill-ses -t mysession
+tmux kill-session -t mysession
+# Kill all sessions except the current one
+tmux kill-session -a
+# Kill all sessions except a specific session
+tmux kill-session -a -t mysession
+
+### Rename a Session
+
+Ctrl + b + $
+
+### Detach from Session
+
+Ctrl + b + d
+
+### Switch Session While Inside Another Session
+
+Ctrl + b + s
+
+### Show All Sessions
+
+tmux ls
+tmux list-sessions
+Ctrl + b + s -> shows all sessions
+
+### Attaching to a Session
+
+tmux a -t mysession
+tmux at -t mysession
+tmux attach -t mysession
+tmux attach-session -t mysession
+
+### Window Preview
+
+Ctrl + b + W
+
+### Previous and Next Session
+
+Ctrl + b + ( -> previous session
+Ctrl + b + ) -> next session
+
+### Command Mode
+
+:new
+:new -s mysession
+:kill-session
+:attach -d
+
+### Window Management
+
+Ctrl + b + c -> create window
+Ctrl + b + , -> rename window
+Ctrl + b + & -> close current window
+Ctrl + b + w -> list windows
+Ctrl + b + p -> previous window
+Ctrl + b + n -> next window
+Ctrl + b + 0...9 -> switch between windows by number
+Ctrl + b + i -> toggle last active window
+
+:swap-window -s 2 -t 1
+:swap-window -t -1
+:move-window -t -1
+:move-window -s src_ses:win -t target_ses:win
+:movew -s foo:0 -t bar:9
+:movew -s 0:0 -t 1:9
+:move-window -s src_session:src_window
+:move_window -r
+:movew -r
+
+### Panes
+
+Ctrl + b + ; -> toggle last active pane
+Ctrl + b + % -> horizontal layout
+Ctrl + b + " -> vertical layout
+Ctrl + b + { -> move current pane left
+Ctrl + b + } -> move current pane right
+Ctrl + b + direction keys -> switch pane direction
+Ctrl + b + spacebar -> toggle between pane layouts
+Ctrl + b + o -> switch to next pane
+Ctrl + b + q -> show pane numbers
+Ctrl + b + q + 0...9 -> switch/select pane by number
+Ctrl + b + z -> toggle pane zoom
+Ctrl + b + ! -> convert pane into a window
+
+:split-window -h
+:split-window -v
+:join-pane -s 2 -t 1
+:join-pane -s 2.1 -t 1.0
+:setw synchronize-panes
